@@ -39,7 +39,10 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     func test_load_appendsUrl() {
+        let (client, sut) = makeSUT()
         
+        sut.load()
+        XCTAssertTrue(client.requestedURLs.count == 1)
     }
     
     func makeSUT() -> (HTTPClient, RemoteFeedLoader) {
