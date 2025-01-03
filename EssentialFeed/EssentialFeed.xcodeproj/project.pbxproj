@@ -14,7 +14,6 @@
 		7ECD396E2D1B2EB700AD14BE /* FeedApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ECD396D2D1B2EB700AD14BE /* FeedApi.swift */; };
 		7ECD39722D2473EB00AD14BE /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ECD39712D2473EA00AD14BE /* HTTPClient.swift */; };
 		7ECD39742D24741C00AD14BE /* FeedItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ECD39732D24741C00AD14BE /* FeedItemMapper.swift */; };
-		7ECD39762D279E9A00AD14BE /* LoadFeedResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ECD39752D279E9900AD14BE /* LoadFeedResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,7 +39,6 @@
 		7ECD396D2D1B2EB700AD14BE /* FeedApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedApi.swift; sourceTree = "<group>"; };
 		7ECD39712D2473EA00AD14BE /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		7ECD39732D24741C00AD14BE /* FeedItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemMapper.swift; sourceTree = "<group>"; };
-		7ECD39752D279E9900AD14BE /* LoadFeedResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFeedResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,7 +112,6 @@
 			isa = PBXGroup;
 			children = (
 				7ECD396D2D1B2EB700AD14BE /* FeedApi.swift */,
-				7ECD39752D279E9900AD14BE /* LoadFeedResult.swift */,
 				7ECD39712D2473EA00AD14BE /* HTTPClient.swift */,
 				7ECD39732D24741C00AD14BE /* FeedItemMapper.swift */,
 			);
@@ -236,7 +233,6 @@
 				7ECD39742D24741C00AD14BE /* FeedItemMapper.swift in Sources */,
 				080EDF0C21B6DAE800813479 /* FeedItem.swift in Sources */,
 				7ECD39722D2473EB00AD14BE /* HTTPClient.swift in Sources */,
-				7ECD39762D279E9A00AD14BE /* LoadFeedResult.swift in Sources */,
 				7ECD396E2D1B2EB700AD14BE /* FeedApi.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
