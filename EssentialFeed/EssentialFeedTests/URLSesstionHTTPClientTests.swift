@@ -10,31 +10,7 @@ import XCTest
 import EssentialFeed
 
 
-class URLSessionHTTPClient: HTTPClient {
-    let session: URLSession
-    
-    init(session: URLSession = .shared) {
-        self.session = session
-    }
-    
-    struct UnexpectedValuesRepresentaion: Error {
-        
-    }
-    
-    func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-        session.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-            } else if let data = data, let response = response as? HTTPURLResponse{
-                completion(.success(data, response))
-            } else {
-                completion(.failure(UnexpectedValuesRepresentaion()))
-            }
-        }.resume()
-    }
-    
-    
-}
+
 
 class URLSesstionHTTPClientTests: XCTestCase {
     override func setUp() {
@@ -53,12 +29,12 @@ class URLSesstionHTTPClientTests: XCTestCase {
         
         let exp = expectation(description: "Wait for request")
         URLProtocolStub.observeRequests { request in
-            XCTAssertEqual(request.url?.absoluteString, url.absoluteString)
+            XCTAssertEqual(request.url, url)
             XCTAssertEqual(request.httpMethod, "GET")
             exp.fulfill()
         }
         
-        makeSUT().get(from: url) { _ in
+        makeSUT().get(from: anyURL()) { _ in
             
         }
         
@@ -148,7 +124,7 @@ class URLSesstionHTTPClientTests: XCTestCase {
     }
     
     private func anyURL() -> URL {
-        URL(string: "http://a-url.com")!
+        URL(string: "http://a-url.com/")!
     }
     
     private func anyData() -> Data {
@@ -167,7 +143,7 @@ class URLSesstionHTTPClientTests: XCTestCase {
         URLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 1, textEncodingName: nil)
     }
     
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
         trackForMemeoryLeaks(sut, file: file, line: line)
         return sut
