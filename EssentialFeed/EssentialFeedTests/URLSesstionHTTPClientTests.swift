@@ -17,10 +17,16 @@ class URLSessionHTTPClient: HTTPClient {
         self.session = session
     }
     
+    struct UnexpectedValuesRepresentaion: Error {
+        
+    }
+    
     func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
         session.dataTask(with: url) { _, _, error in
             if let error = error {
                 completion(.failure(error))
+            } else {
+                completion(.failure(UnexpectedValuesRepresentaion()))
             }
         }.resume()
     }
@@ -45,7 +51,7 @@ class URLSesstionHTTPClientTests: XCTestCase {
         
         let exp = expectation(description: "Wait for request")
         URLProtocolStub.observeRequests { request in
-            XCTAssertEqual(request.url, url)
+            XCTAssertEqual(request.url?.absoluteString, url.absoluteString)
             XCTAssertEqual(request.httpMethod, "GET")
             exp.fulfill()
         }
@@ -77,12 +83,39 @@ class URLSesstionHTTPClientTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func test_getFromUrl_failsOnAllNilValues() {
+        let url = anyURL()
+        let error = NSError(domain: "an error", code: 1)
+        URLProtocolStub.stub(data: nil, response: nil, error: nil)
+        
+        let exp = expectation(description: "Wait to complete")
+        makeSUT().get(from: url) { result in
+            switch result {
+            case .failure:
+                break
+            default:
+                XCTFail("Expected failure, got result \(result)")
+            }
+                        
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     private func anyURL() -> URL {
         URL(string: "http://a-url.com")!
     }
     
-    private func makeSUT() -> URLSessionHTTPClient {
-        URLSessionHTTPClient()
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
+        let sut = URLSessionHTTPClient()
+        trackForMemeoryLeaks(sut, file: file, line: line)
+        return sut
+    }
+    
+    private func trackForMemeoryLeaks(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
+        addTeardownBlock { [weak instance] in
+            XCTAssertNil(instance, "Instance should have been dealocated. Potential memory leak", file: file, line: line)
+        }
     }
     
     private class URLProtocolStub: URLProtocol {
