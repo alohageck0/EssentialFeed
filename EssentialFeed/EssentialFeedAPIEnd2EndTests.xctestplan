@@ -9,7 +9,7 @@
     }
   ],
   "defaultOptions" : {
-
+    "threadSanitizerEnabled" : true
   },
   "testTargets" : [
     {
@@ -18,6 +18,14 @@
         "containerPath" : "container:EssentialFeed.xcodeproj",
         "identifier" : "7E9232F82D2F54CD00DDD459",
         "name" : "EssentialFeedAPIEnd2EndTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:EssentialFeed.xcodeproj",
+        "identifier" : "080EDEF921B6DA7E00813479",
+        "name" : "EssentialFeedTests"
       }
     }
   ],
