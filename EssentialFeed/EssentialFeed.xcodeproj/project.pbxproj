@@ -10,6 +10,7 @@
 		080EDEFB21B6DA7E00813479 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; };
 		080EDF0C21B6DAE800813479 /* FeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080EDF0B21B6DAE800813479 /* FeedItem.swift */; };
 		080EDF0E21B6DCB600813479 /* FeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080EDF0D21B6DCB600813479 /* FeedLoader.swift */; };
+		7E71334C2D3D6FF300226FBD /* CacheFeedUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E7133492D3D6FAA00226FBD /* CacheFeedUseCase.swift */; };
 		7E9232FD2D2F54CD00DDD459 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; };
 		7E9233062D2F5A0900DDD459 /* XCTestCase+MemoryLeakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9233052D2F5A0900DDD459 /* XCTestCase+MemoryLeakTracker.swift */; };
 		7E9233072D2F5A0900DDD459 /* XCTestCase+MemoryLeakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9233052D2F5A0900DDD459 /* XCTestCase+MemoryLeakTracker.swift */; };
@@ -45,6 +46,7 @@
 		080EDF0121B6DA7E00813479 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		080EDF0B21B6DAE800813479 /* FeedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItem.swift; sourceTree = "<group>"; };
 		080EDF0D21B6DCB600813479 /* FeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoader.swift; sourceTree = "<group>"; };
+		7E7133492D3D6FAA00226FBD /* CacheFeedUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheFeedUseCase.swift; sourceTree = "<group>"; };
 		7E9232F92D2F54CD00DDD459 /* EssentialFeedAPIEnd2EndTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialFeedAPIEnd2EndTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E9233032D2F563B00DDD459 /* EssentialFeedAPIEnd2EndTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialFeedAPIEnd2EndTests.xctestplan; sourceTree = "<group>"; };
 		7E9233052D2F5A0900DDD459 /* XCTestCase+MemoryLeakTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracker.swift"; sourceTree = "<group>"; };
@@ -125,12 +127,12 @@
 		080EDEFE21B6DA7E00813479 /* EssentialFeedTests */ = {
 			isa = PBXGroup;
 			children = (
+				7E7133482D3D6F8200226FBD /* Feed Cache */,
+				7E7133472D3D6F6400226FBD /* Feed Api */,
 				7E9233042D2F59E600DDD459 /* Helpers */,
 				080EDF0121B6DA7E00813479 /* Info.plist */,
 				7ECD39662D1A6CB200AD14BE /* Header.h */,
-				7ECD39692D1A6D1900AD14BE /* RemoteFeedLoaderTests.swift */,
 				7ECD396B2D1A6DA400AD14BE /* EssentialFeedTests-Bridging-Header.h */,
-				7ECD39772D2B440D00AD14BE /* URLSesstionHTTPClientTests.swift */,
 			);
 			path = EssentialFeedTests;
 			sourceTree = "<group>";
@@ -142,6 +144,23 @@
 				080EDF0D21B6DCB600813479 /* FeedLoader.swift */,
 			);
 			path = "Feed Feature";
+			sourceTree = "<group>";
+		};
+		7E7133472D3D6F6400226FBD /* Feed Api */ = {
+			isa = PBXGroup;
+			children = (
+				7ECD39692D1A6D1900AD14BE /* RemoteFeedLoaderTests.swift */,
+				7ECD39772D2B440D00AD14BE /* URLSesstionHTTPClientTests.swift */,
+			);
+			path = "Feed Api";
+			sourceTree = "<group>";
+		};
+		7E7133482D3D6F8200226FBD /* Feed Cache */ = {
+			isa = PBXGroup;
+			children = (
+				7E7133492D3D6FAA00226FBD /* CacheFeedUseCase.swift */,
+			);
+			path = "Feed Cache";
 			sourceTree = "<group>";
 		};
 		7E9233042D2F59E600DDD459 /* Helpers */ = {
@@ -323,6 +342,7 @@
 			files = (
 				7ECD39782D2B440D00AD14BE /* URLSesstionHTTPClientTests.swift in Sources */,
 				7E9233062D2F5A0900DDD459 /* XCTestCase+MemoryLeakTracker.swift in Sources */,
+				7E71334C2D3D6FF300226FBD /* CacheFeedUseCase.swift in Sources */,
 				7ECD396A2D1A6D1900AD14BE /* RemoteFeedLoaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
