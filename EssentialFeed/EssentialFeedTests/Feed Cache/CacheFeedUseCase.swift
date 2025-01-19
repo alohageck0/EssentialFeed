@@ -6,15 +6,26 @@
 //
 
 import XCTest
+import EssentialFeed
 
 class LocalFeedLoader {
+    let store: FeedStore
     init(store: FeedStore) {
+        self.store = store
+    }
     
+    func save(_ items: [FeedItem]) -> Bool {
+        return store.deleteCachedFeed()
     }
 }
 
 class FeedStore {
     var deleteCacheFeedCount = 0
+    
+    func deleteCachedFeed() -> Bool {
+        deleteCacheFeedCount += 1
+        return true
+    }
 }
 
 final class CacheFeedUseCaseTests: XCTestCase {
@@ -33,12 +44,24 @@ final class CacheFeedUseCaseTests: XCTestCase {
         
         XCTAssertEqual(feedStore.deleteCacheFeedCount, 0)
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    func test_save_requestsToDeleteCacheWhileSavingNewItems() throws {
+        let feedStore = FeedStore()
+        let sut = LocalFeedLoader(store: feedStore)
+        
+        let items = [uniqueItem(), uniqueItem()]
+        sut.save(items)
+        
+        XCTAssertEqual(feedStore.deleteCacheFeedCount, 1)
     }
 
+    // MARK: Helpers
+    
+    private func uniqueItem() -> FeedItem {
+        FeedItem(id: UUID(), description: nil, location: nil, imageURL: anyURL())
+    }
+
+    private func anyURL() -> URL {
+        URL(string: "http://a-url.com/")!
+    }
 }
