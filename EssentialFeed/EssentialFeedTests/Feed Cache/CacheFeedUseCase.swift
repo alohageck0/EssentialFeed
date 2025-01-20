@@ -59,6 +59,10 @@ class FeedStore {
         deletionCompletions[index](nil)
     }
     
+    func completeInsertionSuccessfully(at index: Int = 0) {
+        insertionCompletions[index](nil)
+    }
+    
     func insert(_ items: [FeedItem], _ currentDate: Date, completion: @escaping DeletionCompletion) {
         insertionCompletions.append(completion)
         receivedMessages.append(.insert(items, currentDate))
@@ -153,6 +157,25 @@ final class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertEqual(receivedError as NSError?, insertionError)
         // Investigate Error enums for deletion and insertion errors
 //        XCTAssertEqual(feedStore.receivedMessages, [.deleteCachedFeed])
+    }
+    
+    func test_save_succeedsOnSuccesfulCacheInsertion() throws {
+        let timeStamp = Date()
+        let (feedStore, sut) = makeSUT(currentDate: { timeStamp })
+        let items = [uniqueItem(), uniqueItem()]
+        var receivedError: Error?
+        let exp = expectation(description: "Wait for save to complete")
+        sut.save(items) { error in
+            receivedError = error
+            exp.fulfill()
+        }
+        feedStore.completeDeletionSuccessfully()
+        feedStore.completeInsertionSuccessfully()
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertNil(receivedError)
+        XCTAssertEqual(feedStore.receivedMessages, [.deleteCachedFeed, .insert(items, timeStamp)])
     }
 
     // MARK: Helpers
