@@ -20,10 +20,13 @@ class LocalFeedLoader {
     func save(_ items: [FeedItem], completion: @escaping (Error?) -> Void) {
         store.deleteCachedFeed() { [weak self] error in
             guard let self = self else { return }
-            if error == nil {
-                self.store.insert(items, self.currentDate(), completion: completion)
-            } else {
+            if error != nil {
                 completion(error)
+            } else {
+                self.store.insert(items, self.currentDate()) { [weak self] error in
+                    guard self != nil else { return }
+                    completion(error)
+                }
             }
         }
     }
@@ -34,7 +37,7 @@ protocol FeedStore {
     typealias InsertionCompletion = (Error?) -> Void
     
     func deleteCachedFeed(completion: @escaping DeletionCompletion)
-    func insert(_ items: [FeedItem], _ currentDate: Date, completion: @escaping DeletionCompletion)
+    func insert(_ items: [FeedItem], _ currentDate: Date, completion: @escaping InsertionCompletion)
 }
 
 final class CacheFeedUseCaseTests: XCTestCase {
@@ -105,8 +108,6 @@ final class CacheFeedUseCaseTests: XCTestCase {
             feedStore.completeDeletionSuccessfully()
             feedStore.completeInsertion(with: insertionError)
         }
-        // Investigate Error enums for deletion and insertion errors
-//        XCTAssertEqual(feedStore.receivedMessages, [.deleteCachedFeed])
     }
     
     func test_save_succeedsOnSuccesfulCacheInsertion() throws {
@@ -132,6 +133,22 @@ final class CacheFeedUseCaseTests: XCTestCase {
         sut = nil
         
         feedStore.completeDeletion(with: anyNSError())
+        XCTAssertTrue(receivedError.isEmpty)
+    }
+    
+    func test_save_doesNotDeliverInsertionErrorAfterSUTInstanceHasBeenDeallocated() {
+        var sut: LocalFeedLoader?
+        let feedStore = FeedStoreSpy()
+        sut = LocalFeedLoader(store: feedStore, currentDate: Date.init)
+        
+        var receivedError = [Error?]()
+        sut?.save([uniqueItem()], completion: { receivedError.append($0)
+        })
+        
+        feedStore.completeDeletionSuccessfully()
+        sut = nil
+        feedStore.completeInsertion(with: anyNSError())
+        
         XCTAssertTrue(receivedError.isEmpty)
     }
 
