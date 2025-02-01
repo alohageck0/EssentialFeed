@@ -63,6 +63,17 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         })
     }
     
+    func test_load_deliversNoImagesMoreThan7DaysCache() {
+        let fixedCurrentDate = Date()
+        let (feedStore, sut) = makeSUT(currentDate: { fixedCurrentDate })
+        let moreThanSevenDays = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
+        let feed = uniqueImageFeed()
+        
+        expect(sut, toCompleteWith: .success([]), when: {
+            feedStore.completeRetreivalSuccessfully(with: feed.local, timestamp: moreThanSevenDays)
+        })
+    }
+    
     //MARK: Helpers
     
     private func expect(_ sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
