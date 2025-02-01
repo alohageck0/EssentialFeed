@@ -38,6 +38,10 @@ class FeedStoreSpy: FeedStore {
         rereivalCompletions[index](error)
     }
     
+    func completeWithEmptyCache(at index: Int = 0) {
+        rereivalCompletions[index](nil)
+    }
+    
     func completeDeletionSuccessfully(at index: Int = 0) {
         deletionCompletions[index](nil)
     }

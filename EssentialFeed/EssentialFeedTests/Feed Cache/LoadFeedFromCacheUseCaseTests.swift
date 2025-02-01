@@ -46,6 +46,27 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(receivedError as NSError?, expectedError)
     }
     
+    func test_load_deliversNoImagesWithEmptyCache() {
+        let (feedStore, sut) = makeSUT()
+        var receivedImages: [FeedImage]?
+        
+        let exp = expectation(description: "wait to complete")
+        sut.load() { result in
+            switch result {
+            case .failure:
+                XCTFail("Expected success, but got \(result)")
+            case let .success(images):
+                receivedImages = images
+            }
+            exp.fulfill()
+        }
+        
+        feedStore.completeWithEmptyCache()
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(receivedImages, [])
+    }
+    
     private func anyNSError() -> NSError {
         NSError(domain: "1", code: 1)
     }
