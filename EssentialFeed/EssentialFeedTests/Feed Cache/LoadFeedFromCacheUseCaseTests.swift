@@ -27,44 +27,39 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_load_failsOnRetreivalError() {
         let (feedStore, sut) = makeSUT()
         let expectedError = anyNSError()
-        var receivedError: Error?
         
-        let exp = expectation(description: "wait to complete")
-        sut.load() { result in
-            switch result {
-            case let .failure(error):
-                receivedError = error
-            case .success:
-                XCTFail("Expected failure, but got \(result)")
-            }
-            exp.fulfill()
-        }
-        
-        feedStore.completeRetreival(with: expectedError)
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual(receivedError as NSError?, expectedError)
+        expect(sut, toCompleteWith: .failure(expectedError), when: {
+            feedStore.completeRetreival(with: expectedError)
+        })
     }
     
     func test_load_deliversNoImagesWithEmptyCache() {
         let (feedStore, sut) = makeSUT()
-        var receivedImages: [FeedImage]?
+        
+        expect(sut, toCompleteWith: .success([]), when: {
+            feedStore.completeWithEmptyCache()
+        })
+    }
+    
+    //MARK: Helpers
+    
+    private func expect(_ sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, when action: () -> Void) {
         
         let exp = expectation(description: "wait to complete")
-        sut.load() { result in
-            switch result {
-            case .failure:
-                XCTFail("Expected success, but got \(result)")
-            case let .success(images):
-                receivedImages = images
+        sut.load() { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case let (.success(receivedImages), .success(expectedImages)):
+                XCTAssertEqual(receivedImages, expectedImages)
+            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(receivedError, expectedError)
+            default:
+                XCTFail("Expected \(expectedResult), but received \(receivedResult)")
             }
             exp.fulfill()
         }
         
-        feedStore.completeWithEmptyCache()
+        action()
         wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual(receivedImages, [])
     }
     
     private func anyNSError() -> NSError {
