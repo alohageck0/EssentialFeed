@@ -139,22 +139,4 @@ final class CacheFeedUseCaseTests: XCTestCase {
         trackForMemeoryLeaks(sut, file: file, line: line)
         return (feedStore, sut)
     }
-    
-    private func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
-        let items = [uniqueImage(), uniqueImage()]
-        let localItems = items.map { LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url) }
-        return (items, localItems)
-    }
-    
-    private func uniqueImage() -> FeedImage {
-        FeedImage(id: UUID(), description: nil, location: nil, url: anyURL())
-    }
-
-    private func anyURL() -> URL {
-        URL(string: "http://a-url.com/")!
-    }
-    
-    private func anyNSError() -> NSError {
-        NSError(domain: "1", code: 1)
-    }
 }
