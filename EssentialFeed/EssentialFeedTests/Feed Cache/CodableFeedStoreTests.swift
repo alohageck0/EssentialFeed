@@ -89,13 +89,7 @@ final class CodableFeedStoreTests: XCTestCase {
         let expectedFeed = uniqueImageFeed().local
         let expectedTimeStamp = Date()
         
-        let exp = expectation(description: "wait for retreival to complete")
-        sut.insert(expectedFeed, expectedTimeStamp) { insertionError in
-            XCTAssertNil(insertionError, "Expected to be inserted successfully")
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        insert((expectedFeed, expectedTimeStamp), to: sut)
         
         expect(sut, toRetreive: .found(feed: expectedFeed, timestamp: expectedTimeStamp))
     }
@@ -105,13 +99,7 @@ final class CodableFeedStoreTests: XCTestCase {
         let expectedFeed = uniqueImageFeed().local
         let expectedTimeStamp = Date()
         
-        let exp = expectation(description: "wait for retreival to complete")
-        sut.insert(expectedFeed, expectedTimeStamp) { insertionError in
-            XCTAssertNil(insertionError, "Expected to be inserted successfully")
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        insert((expectedFeed, expectedTimeStamp), to: sut)
         
         expect(sut, toRetreiveTwice: .found(feed: expectedFeed, timestamp: expectedTimeStamp))
     }
@@ -123,6 +111,16 @@ final class CodableFeedStoreTests: XCTestCase {
         let sut = CodableFeedStore(storeUrl)
         trackForMemeoryLeaks(sut, file: file, line: line)
         return sut
+    }
+    
+    private func insert(_ expected: (feed: [LocalFeedImage], currentDate: Date), to sut: CodableFeedStore, file: StaticString = #filePath, line: UInt = #line) {
+        let exp = expectation(description: "wait for retreival to complete")
+        sut.insert(expected.feed, expected.currentDate) { insertionError in
+            XCTAssertNil(insertionError, "Expected to be inserted successfully")
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
     }
     
     private func expect(_ sut: CodableFeedStore, toRetreive expectedResult: RetreiveCacheResult, file: StaticString = #filePath, line: UInt = #line) {
