@@ -10,7 +10,7 @@ import Foundation
 protocol FeedStoreSpecs {
     func test_retreive_deliversEmptyOnEmptyCache()
     func test_retreive_hasNoSideEffectsOnEmptyCache()
-    func test_retreiveFoundValuesOnNonEmptyCache()
+    func test_retreive_deliversFoundValuesOnNonEmptyCache()
     func test_retreive_hasNoSideEffectsOnNonEmptyCache()
 
     func test_insert_deliversNoErrorOnEmptyCache()
