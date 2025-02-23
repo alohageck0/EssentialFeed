@@ -5,12 +5,43 @@
 //  Created by Evgenii Iavorovich on 2/23/25.
 //
 
-import Testing
+import XCTest
+import EssentialFeed
 
-struct EssentialFeedCacheIntegrationTests {
+final class EssentialFeedCacheIntegrationTests: XCTestCase {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    func test_load_deliversNoItemsOnEmptyCache() {
+        let sut = makeSUT()
+        
+        let exp = expectation(description: "Wait for load")
+        sut.load { result in
+            switch result {
+            case let .success(items):
+                XCTAssertEqual(items, [], "Expected feed to be empty")
+            case .failure(let error):
+                XCTFail("Expected successfull result, unexpected error: \(error)")
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
     }
-
+    
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> LocalFeedLoader {
+        let storeBundle = Bundle(for: CoreDataFeedStore.self)
+        let storeUrl = testSpecificStoreUrl()
+        let feedStore = try! CoreDataFeedStore(storeUrl: storeUrl, bundle: storeBundle)
+        let sut = LocalFeedLoader(store: feedStore, currentDate: Date.init)
+        trackForMemeoryLeaks(feedStore, file: file, line: line)
+        trackForMemeoryLeaks(sut, file: file, line: line)
+        return sut
+    }
+    
+    private func testSpecificStoreUrl() -> URL {
+        return cachesDirectory().appendingPathComponent("\(type(of: self)).store")
+    }
+    
+    private func cachesDirectory() -> URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+    }
 }
