@@ -24,18 +24,7 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
     func test_load_deliversNoItemsOnEmptyCache() {
         let sut = makeSUT()
         
-        let exp = expectation(description: "Wait for load")
-        sut.load { result in
-            switch result {
-            case let .success(items):
-                XCTAssertEqual(items, [], "Expected feed to be empty")
-            case .failure(let error):
-                XCTFail("Expected successfull result, unexpected error: \(error)")
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        expect(sut, toLoad: [])
     }
     
     func test_load_deliversItemsSavedOnASeparateInstance() {
@@ -43,26 +32,8 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         let sutToPerformLoad = makeSUT()
         let expectedImageFeed = uniqueImageFeed().models
         
-        let saveExp = expectation(description: "Wait for save competion")
-        sutToPerformSave.save(expectedImageFeed) { saveError in
-            XCTAssertNil(saveError, "Expected to save successfully")
-            saveExp.fulfill()
-        }
-        
-        wait(for: [saveExp], timeout: 1.0)
-        
-        let loadExp = expectation(description: "Wait for load competion")
-        sutToPerformLoad.load { loadResult in
-            switch loadResult {
-            case let .success(receivedImageFeed):
-                XCTAssertEqual(receivedImageFeed, expectedImageFeed, "Expected to load the feed")
-            case .failure(let error):
-                XCTFail("Expected successfull result, unexpected error: \(error)")
-            }
-            loadExp.fulfill()
-        }
-        
-        wait(for: [loadExp], timeout: 1.0)
+        expect(sutToPerformSave, toSave: expectedImageFeed)
+        expect(sutToPerformLoad, toLoad: expectedImageFeed)
     }
     
     // MARK: Helpers
@@ -77,6 +48,32 @@ final class EssentialFeedCacheIntegrationTests: XCTestCase {
         return sut
     }
     
+    private func expect(_ sut: LocalFeedLoader, toSave feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
+        
+        let saveExp = expectation(description: "Wait for save competion")
+        sut.save(feed) { saveError in
+            XCTAssertNil(saveError, "Expected to save successfully", file: file, line: line)
+            saveExp.fulfill()
+        }
+        
+        wait(for: [saveExp], timeout: 1.0)
+    }
+    
+    private func expect(_ sut: LocalFeedLoader, toLoad feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
+        
+        let exp = expectation(description: "Wait for load")
+        sut.load { result in
+            switch result {
+            case let .success(items):
+                XCTAssertEqual(items, feed, "Expected feed to be empty", file: file, line: line)
+            case .failure(let error):
+                XCTFail("Expected successfull result, unexpected error: \(error)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
     private func setupEmptyStoreState() {
         deleteStoreArtifacts()
