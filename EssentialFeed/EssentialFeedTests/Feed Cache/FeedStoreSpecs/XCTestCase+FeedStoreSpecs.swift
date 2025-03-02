@@ -152,7 +152,7 @@ extension FeedStoreSpecs where Self: XCTestCase {
         return deletionError
     }
     
-    func expect(_ sut: FeedStore, toRetreive expectedResult: RetreiveCacheResult, file: StaticString = #filePath, line: UInt = #line) {
+    func expect(_ sut: FeedStore, toRetreive expectedResult: FeedStore.RetreivalResult, file: StaticString = #filePath, line: UInt = #line) {
         
         let exp = expectation(description: "wait for retreival to complete")
         sut.retreive { result in
@@ -171,7 +171,7 @@ extension FeedStoreSpecs where Self: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func expect(_ sut: FeedStore, toRetreiveTwice expectedResult: RetreiveCacheResult, file: StaticString = #filePath, line: UInt = #line) {
+    func expect(_ sut: FeedStore, toRetreiveTwice expectedResult: FeedStore.RetreivalResult, file: StaticString = #filePath, line: UInt = #line) {
         expect(sut, toRetreive: expectedResult, file: file, line: line)
         expect(sut, toRetreive: expectedResult, file: file, line: line)
     }
