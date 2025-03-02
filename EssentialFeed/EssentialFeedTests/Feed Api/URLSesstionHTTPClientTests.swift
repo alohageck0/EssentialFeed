@@ -96,7 +96,6 @@ class URLSesstionHTTPClientTests: XCTestCase {
     private func resultValuesFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #filePath, line: UInt = #line) -> (data: Data, response: HTTPURLResponse)? {
         
         let result = resultFor(data: data, response: response, error: error)
-        var receivedValues: (Data, HTTPURLResponse)?
         
         switch result {
         case let .success(data, response):
