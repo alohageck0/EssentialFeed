@@ -11,8 +11,12 @@ public typealias CacheFeed = (feed: [LocalFeedImage], timestamp: Date)
 
 public protocol FeedStore {
     
-    typealias DeletionCompletion = (Error?) -> Void
-    typealias InsertionCompletion = (Error?) -> Void
+    typealias DelettionResult = Error?
+    typealias DeletionCompletion = (DelettionResult) -> Void
+    
+    typealias InsertionResult = Error?
+    typealias InsertionCompletion = (InsertionResult) -> Void
+    
     typealias RetreivalResult = Result<CacheFeed?, Error>
     typealias RetreivalCompletion = (RetreivalResult) -> Void
     
