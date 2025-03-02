@@ -91,7 +91,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         sut = LocalFeedLoader(store: feedStore, currentDate: Date.init)
         
         var receivedError = [Error?]()
-        sut?.save([uniqueImage()], completion: { receivedError.append($0)
+        sut?.save([uniqueImage()], completion: { receivedError.append($0 as? Error)
         })
         sut = nil
         
@@ -105,7 +105,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         sut = LocalFeedLoader(store: feedStore, currentDate: Date.init)
         
         var receivedError = [Error?]()
-        sut?.save([uniqueImage()], completion: { receivedError.append($0)
+        sut?.save([uniqueImage()], completion: { receivedError.append($0 as? Error)
         })
         
         feedStore.completeDeletionSuccessfully()
@@ -121,8 +121,13 @@ final class CacheFeedUseCaseTests: XCTestCase {
         var receivedError: Error?
         
         let exp = expectation(description: "Wait for save to complete")
-        sut.save(items) { error in
-            receivedError = error
+        sut.save(items) { result in
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                receivedError = error
+            }
             exp.fulfill()
         }
         action()
