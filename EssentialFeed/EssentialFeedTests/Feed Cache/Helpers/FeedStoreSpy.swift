@@ -39,11 +39,11 @@ class FeedStoreSpy: FeedStore {
     }
     
     func completeWithEmptyCache(at index: Int = 0) {
-        rereivalCompletions[index](.empty)
+        rereivalCompletions[index](.success(.empty))
     }
     
     func completeRetreivalSuccessfully(with feed: [LocalFeedImage], timestamp: Date, at index: Int = 0) {
-        rereivalCompletions[index](.found(feed: feed, timestamp: timestamp))
+        rereivalCompletions[index](.success(.found(feed: feed, timestamp: timestamp)))
     }
     
     func completeDeletionSuccessfully(at index: Int = 0) {
