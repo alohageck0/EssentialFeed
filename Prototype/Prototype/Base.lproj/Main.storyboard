@@ -70,15 +70,19 @@ Location</string>
                                                     <rect key="frame" x="0.0" y="48.333333333333314" width="353" height="353"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="w5A-lY-LFh">
-                                                            <rect key="frame" x="8" y="8" width="337" height="337"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="353" height="353"/>
                                                         </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="Kus-On-w98" secondAttribute="height" multiplier="1:1" id="8ES-XL-0Vd"/>
+                                                        <constraint firstItem="w5A-lY-LFh" firstAttribute="leading" secondItem="Kus-On-w98" secondAttribute="leading" id="A9D-60-4VV"/>
+                                                        <constraint firstAttribute="trailing" secondItem="w5A-lY-LFh" secondAttribute="trailing" id="Khj-82-AYd"/>
                                                         <constraint firstAttribute="bottomMargin" secondItem="w5A-lY-LFh" secondAttribute="bottom" id="RMG-Fc-aJ7"/>
+                                                        <constraint firstAttribute="bottom" secondItem="w5A-lY-LFh" secondAttribute="bottom" id="Tu5-td-XfV"/>
                                                         <constraint firstItem="w5A-lY-LFh" firstAttribute="leading" secondItem="Kus-On-w98" secondAttribute="leadingMargin" id="XjG-vd-SCm"/>
                                                         <constraint firstItem="w5A-lY-LFh" firstAttribute="top" secondItem="Kus-On-w98" secondAttribute="topMargin" id="bam-cN-ICc"/>
+                                                        <constraint firstItem="w5A-lY-LFh" firstAttribute="top" secondItem="Kus-On-w98" secondAttribute="top" id="dOD-t0-PAq"/>
                                                         <constraint firstAttribute="trailingMargin" secondItem="w5A-lY-LFh" secondAttribute="trailing" id="iDn-0l-X4b"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
@@ -97,7 +101,6 @@ Location</string>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="Kus-On-w98" firstAttribute="width" secondItem="Uml-DJ-NNy" secondAttribute="width" id="1IO-Od-vYu"/>
-                                                <constraint firstItem="Fqb-Wq-Wn6" firstAttribute="width" secondItem="Uml-DJ-NNy" secondAttribute="width" multiplier="0.223796" id="6rf-hD-F9i"/>
                                             </constraints>
                                         </stackView>
                                     </subviews>
