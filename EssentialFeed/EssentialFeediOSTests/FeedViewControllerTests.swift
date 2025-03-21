@@ -45,21 +45,28 @@ final class FeedViewControllerTests: XCTestCase {
     }
     
     func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() {
-        let image = makeImage(description: "a description", location: "a location")
+        let image0 = makeImage(description: "a description", location: "a location")
+        let image1 = makeImage(description: nil, location: "a location 1")
+        let image2 = makeImage(description: "a description 1", location: nil)
+        let image4 = makeImage(description: nil, location: nil)
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()
         
         sut.simulateViewDidLoad()
         XCTAssertEqual(sut.numberOfRenderedFeedImageCells(), 0)
         
-        loader.completeFeedLoading(with: [image], at: 0)
+        loader.completeFeedLoading(with: [image0], at: 0)
         XCTAssertEqual(sut.numberOfRenderedFeedImageCells(), 1)
+        assertThat(sut, hasViewConfiguredFor: image0, at: 0)
         
-        let view = sut.feedImageView(at: 0) as? FeedImageCell
-        XCTAssertNotNil(view)
-        XCTAssertEqual(view?.isShowingLocation, true)
-        XCTAssertEqual(view?.locationText, image.location)
-        XCTAssertEqual(view?.descriptionText, image.description)
+        sut.simulateUserInitiatedFeedReload()
+        loader.completeFeedLoading(with: [image0, image1, image2, image4], at: 1)
+        XCTAssertEqual(sut.numberOfRenderedFeedImageCells(), 4)
+        assertThat(sut, hasViewConfiguredFor: image0, at: 0)
+        assertThat(sut, hasViewConfiguredFor: image1, at: 1)
+        assertThat(sut, hasViewConfiguredFor: image2, at: 2)
+        assertThat(sut, hasViewConfiguredFor: image4, at: 3)
+        
     }
     
     // MARK: Helpers
@@ -74,6 +81,16 @@ final class FeedViewControllerTests: XCTestCase {
     
     private func makeImage(description: String? = nil, location: String? = nil, url: URL = URL(string: "http://example.com")!) -> FeedImage {
         FeedImage(id: UUID(), description: description, location: location, url: url)
+    }
+    
+    private func assertThat(_ sut: FeedViewController, hasViewConfiguredFor image: FeedImage, at index: Int = 0) {
+        let view = sut.feedImageView(at: index) as? FeedImageCell
+        XCTAssertNotNil(view)
+        
+        let shouldLocationBeVisible = image.location != nil
+        XCTAssertEqual(view?.isShowingLocation, shouldLocationBeVisible)
+        XCTAssertEqual(view?.locationText, image.location)
+        XCTAssertEqual(view?.descriptionText, image.description)
     }
     
     class LoaderSpy: FeedLoader {
