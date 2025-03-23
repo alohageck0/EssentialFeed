@@ -15,10 +15,10 @@ public protocol FeedImageDataLoaderTask {
 public protocol FeedImageDateLoader {
     typealias Result = Swift.Result<Data, Error>
     
-    func loadImageData(for url: URL, _ completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
+    func loadImageData(from url: URL, _ completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
 }
 
-public final class FeedViewController: UITableViewController {
+public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     private var loader: FeedLoader?
     private(set) var imageLoader: FeedImageDateLoader?
     private var tableModel = [FeedImage]()
@@ -35,7 +35,7 @@ public final class FeedViewController: UITableViewController {
         
         refreshControl = UIRefreshControl()
         refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
-        
+        tableView.prefetchDataSource = self
         load()
     }
     
@@ -62,7 +62,7 @@ public final class FeedViewController: UITableViewController {
         let loadImage = { [weak self, weak cell] in
             guard let self = self, let cell = cell else { return }
             
-            tasks[indexPath] = self.imageLoader?.loadImageData(for: cellModel.url) { [weak cell] result in
+            tasks[indexPath] = self.imageLoader?.loadImageData(from: cellModel.url) { [weak cell] result in
                 let data = try? result.get()
                 let image = data.map(UIImage.init) ?? nil
                 cell?.feedImageView.image = image
@@ -80,6 +80,13 @@ public final class FeedViewController: UITableViewController {
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         tasks[indexPath]?.cancel()
         tasks[indexPath] = nil
+    }
+    
+    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach { indexPath in
+            let cellModel = tableModel[indexPath.row]
+            _ = imageLoader?.loadImageData(from: cellModel.url, { _ in })
+        }
     }
     
     @objc func load() {
