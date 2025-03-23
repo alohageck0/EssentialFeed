@@ -11,6 +11,7 @@ import UIKit
 
 public protocol FeedImageDateLoader {
     func loadImage(for url: URL)
+    func cancelImageDataLoad(from url: URL)
 }
 
 public final class FeedViewController: UITableViewController {
@@ -52,6 +53,11 @@ public final class FeedViewController: UITableViewController {
         cell.locationContainer.isHidden = (cellModel.location == nil)
         imageLoader?.loadImage(for: cellModel.url)
         return cell
+    }
+    
+    public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let cellModel = tableModel[indexPath.row]
+        imageLoader?.cancelImageDataLoad(from: cellModel.url)
     }
     
     @objc func load() {
