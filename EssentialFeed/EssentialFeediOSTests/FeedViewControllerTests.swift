@@ -392,7 +392,7 @@ private extension UIRefreshControl {
 }
 
 private extension UITableViewController {
-    func replaceRefreshControlWithFakeForiOS17Support() {
+    func replaceRefreshControlWithFakeForiOS17Support(controller: FeedRefreshViewController?) {
         let fake = FakeRefreshControl()
         
         refreshControl?.allTargets.forEach { target in
@@ -402,12 +402,13 @@ private extension UITableViewController {
         }
         
         refreshControl = fake
+        controller?.view = fake
     }
 }
 
 private extension FeedViewController {
     func simulateViewDidLoad() {
-        replaceRefreshControlWithFakeForiOS17Support()
+        replaceRefreshControlWithFakeForiOS17Support(controller: refreshController)
         XCTAssertEqual(isShowLoadingIndicator, false)
         
         beginAppearanceTransition(true, animated: false)
@@ -417,7 +418,7 @@ private extension FeedViewController {
     func simulateUserInitiatedFeedReload() {
         refreshControl?.simulatePullToRefresh()
         
-        replaceRefreshControlWithFakeForiOS17Support()
+        replaceRefreshControlWithFakeForiOS17Support(controller: refreshController)
         XCTAssertEqual(isShowLoadingIndicator, false)
         
         beginAppearanceTransition(true, animated: false)

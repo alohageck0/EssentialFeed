@@ -9,25 +9,32 @@ import Foundation
 import EssentialFeed
 import UIKit
 
+
+
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
-    private var loader: FeedLoader?
+    public var refreshController: FeedRefreshViewController?
     private(set) var imageLoader: FeedImageDateLoader?
-    private var tableModel = [FeedImage]()
+    private var tableModel = [FeedImage]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     private(set) var tasks = [IndexPath: FeedImageDataLoaderTask]()
     
     public convenience init(loader: FeedLoader, imageLoader: FeedImageDateLoader) {
         self.init()
-        self.loader = loader
+        self.refreshController = FeedRefreshViewController(loader: loader)
         self.imageLoader = imageLoader
     }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
+        refreshControl = refreshController?.view
+        refreshController?.onRefresh = { [weak self] feed in
+            self?.tableModel = feed
+        }
         tableView.prefetchDataSource = self
-        load()
+        refreshController?.refresh()
     }
     
     public override func viewIsAppearing(_ animated: Bool) {
@@ -86,16 +93,6 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     private func cancelTask(forRowAt indexPath: IndexPath) {
         tasks[indexPath]?.cancel()
         tasks[indexPath] = nil
-    }
-    
-    @objc func load() {
-        loader?.load() { [weak self] result in
-            if let feed = try? result.get() {
-                self?.tableModel = feed
-                self?.tableView.reloadData()
-            }
-            self?.refreshControl?.endRefreshing()
-        }
     }
     
     @objc func refresh() {
