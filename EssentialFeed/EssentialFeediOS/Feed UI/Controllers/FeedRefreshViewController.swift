@@ -5,7 +5,6 @@
 //  Created by Evgenii Iavorovich on 3/25/25.
 //
 
-import Foundation
 import UIKit
 import EssentialFeed
 
