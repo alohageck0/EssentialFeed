@@ -6,7 +6,6 @@
 //
 
 import UIKit
-//import EssentialFeed
 
 public final class FeedRefreshViewController: NSObject {
     private let viewModel: FeedViewModel

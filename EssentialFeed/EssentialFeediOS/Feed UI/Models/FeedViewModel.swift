@@ -14,34 +14,22 @@ public final class FeedViewModel {
         self.loader = loader
     }
     
-    enum State {
-        case pending
-        case loading
-    }
+    var onChange: ((FeedViewModel) -> Void)?
+    var onFeedLoad: (([FeedImage]) -> Void)?
     
-    private var state = State.pending {
+    private(set) var isLoading: Bool = false {
         didSet {
             onChange?(self)
         }
     }
     
-    var onChange: ((FeedViewModel) -> Void)?
-    var onFeedLoad: (([FeedImage]) -> Void)?
-    
-    var isLoading: Bool {
-        switch state {
-        case .loading: true
-        case .pending: false
-        }
-    }
-    
     func loadFeed() {
-        state = .loading
+        isLoading = true
         loader.load() { [weak self] result in
             if let feed = try? result.get() {
                 self?.onFeedLoad?(feed)
             }
-            self?.state = .pending
+            self?.isLoading = false
         }
     }
 }
