@@ -17,8 +17,6 @@ public final class FeedViewModel {
     enum State {
         case pending
         case loading
-        case loaded([FeedImage])
-        case failed
     }
     
     private var state = State.pending {
@@ -28,18 +26,12 @@ public final class FeedViewModel {
     }
     
     var onChange: ((FeedViewModel) -> Void)?
+    var onFeedLoad: (([FeedImage]) -> Void)?
     
     var isLoading: Bool {
         switch state {
         case .loading: true
-        case .pending, .loaded, .failed: false
-        }
-    }
-    
-    var feed: [FeedImage]? {
-        switch state {
-        case .loaded(let feed): feed
-        case .pending, .loading, .failed: nil
+        case .pending: false
         }
     }
     
@@ -47,10 +39,9 @@ public final class FeedViewModel {
         state = .loading
         loader.load() { [weak self] result in
             if let feed = try? result.get() {
-                self?.state = .loaded(feed)
-            } else {
-                self?.state = .failed
+                self?.onFeedLoad?(feed)
             }
+            self?.state = .pending
         }
     }
 }
