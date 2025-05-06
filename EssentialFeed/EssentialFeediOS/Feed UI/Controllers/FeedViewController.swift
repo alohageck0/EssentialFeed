@@ -9,11 +9,9 @@ import Foundation
 import EssentialFeed
 import UIKit
 
-
-
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     public var refreshController: FeedRefreshViewController?
-    private(set) var imageLoader: FeedImageDateLoader?
+    private(set) var imageLoader: FeedImageDataLoader?
     private var tableModel = [FeedImage]() {
         didSet {
             tableView.reloadData()
@@ -23,7 +21,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
     
-    public convenience init(loader: FeedLoader, imageLoader: FeedImageDateLoader) {
+    public convenience init(loader: FeedLoader, imageLoader: FeedImageDataLoader) {
         self.init()
         self.refreshController = FeedRefreshViewController(loader: loader)
         self.imageLoader = imageLoader

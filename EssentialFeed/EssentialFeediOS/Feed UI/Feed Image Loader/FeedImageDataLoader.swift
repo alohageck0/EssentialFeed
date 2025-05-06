@@ -1,8 +1,8 @@
 //
-//  FeedImageDateLoader.swift
+//  FeedImageDataLoader.swift
 //  EssentialFeediOS
 //
-//  Created by Evgenii Iavorovich on 3/25/25.
+//  Created by Evgenii Iavorovich on 5/6/25.
 //
 
 import Foundation
@@ -10,7 +10,8 @@ import Foundation
 public protocol FeedImageDataLoaderTask {
     func cancel()
 }
-public protocol FeedImageDateLoader {
+
+public protocol FeedImageDataLoader {
     typealias Result = Swift.Result<Data, Error>
     
     func loadImageData(from url: URL, _ completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
