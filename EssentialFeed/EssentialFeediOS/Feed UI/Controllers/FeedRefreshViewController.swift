@@ -24,6 +24,8 @@ public final class FeedRefreshViewController: NSObject {
     var onRefresh: (([FeedImage]) -> Void)?
     
     @objc func refresh() {
+        view.beginRefreshing()
+        
         loader.load() { [weak self] result in
             if let feed = try? result.get() {
                 self?.onRefresh?(feed)

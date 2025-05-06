@@ -21,6 +21,8 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     private(set) var tasks = [IndexPath: FeedImageDataLoaderTask]()
     
+    private var onViewIsAppearing: ((FeedViewController) -> Void)?
+    
     public convenience init(loader: FeedLoader, imageLoader: FeedImageDateLoader) {
         self.init()
         self.refreshController = FeedRefreshViewController(loader: loader)
@@ -34,14 +36,17 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
             self?.tableModel = feed
         }
         tableView.prefetchDataSource = self
-        refreshController?.refresh()
+        
+        onViewIsAppearing = { vc in
+            vc.onViewIsAppearing = nil
+            vc.refreshController?.refresh()
+        }
     }
     
     public override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
-        refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
         
-        refresh()
+        onViewIsAppearing?(self)
     }
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -93,9 +98,5 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     private func cancelTask(forRowAt indexPath: IndexPath) {
         tasks[indexPath]?.cancel()
         tasks[indexPath] = nil
-    }
-    
-    @objc func refresh() {
-        refreshControl?.beginRefreshing()
     }
 }
