@@ -7,46 +7,39 @@
 
 import UIKit
 
-public final class FeedImageCellController {
-    private let viewModel: FeedImageViewModel<UIImage>
+protocol FeedImageCellControllerDelegate {
+    func didRequestImage()
+    func didCancelImageRequest()
+}
+
+public final class FeedImageCellController: FeedImageView {
+    private let delegate: FeedImageCellControllerDelegate
+    private lazy var cell = FeedImageCell()
     
-    init(viewModel: FeedImageViewModel<UIImage>) {
-        self.viewModel = viewModel
+    init(delegate: FeedImageCellControllerDelegate) {
+        self.delegate = delegate
     }
 
     func view() -> UITableViewCell {
-        let cell = binded(with: FeedImageCell())
-        viewModel.loadImageData()
+        delegate.didRequestImage()
         return cell
     }
 
     func preload() {
-        viewModel.loadImageData()
+        delegate.didRequestImage()
     }
 
     func cancelLoad() {
-        viewModel.cancelImageDataLoad()
+        delegate.didCancelImageRequest()
     }
 
-    private func binded(with cell: FeedImageCell) -> FeedImageCell {
-        let cell = FeedImageCell()
+    func display(_ viewModel: FeedImageViewModel<UIImage>) {
         cell.descriptionLabel.text = viewModel.description
         cell.locationLabel.text = viewModel.location
         cell.locationContainer.isHidden = !viewModel.hasLocation
-        cell.onRetry = viewModel.loadImageData
-
-        viewModel.onImageLoad = { [weak cell] image in
-            cell?.feedImageView.image = image
-        }
-
-        viewModel.onImageLoadingStateChange = { [weak cell] isLoading in
-            cell?.feedImageContainer.isShimmering = isLoading
-        }
-        
-        viewModel.onShouldRetryImageLoadStateChange = { [weak cell] shouldRetry in
-            cell?.feedImageRetryButton.isHidden = !shouldRetry
-        }
-
-        return cell
+        cell.feedImageView.image = viewModel.image
+        cell.feedImageRetryButton.isHidden = !viewModel.shouldRetry
+        cell.feedImageContainer.isShimmering = viewModel.isLoading
+        cell.onRetry = delegate.didRequestImage
     }
 }
