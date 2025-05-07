@@ -11,8 +11,8 @@ import EssentialFeediOS
 extension FeedViewController {
     func simulateAppearance() {
         if !isViewLoaded {
-            refreshController?.replaceRefreshControlWithFakeForiOS17Support()
             loadViewIfNeeded()
+            refreshController?.replaceRefreshControlWithFakeForiOS17Support()
         }
         
         beginAppearanceTransition(true, animated: false)
