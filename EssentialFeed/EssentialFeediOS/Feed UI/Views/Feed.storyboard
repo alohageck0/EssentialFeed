@@ -80,6 +80,9 @@ Location</string>
                                                             <state key="normal" title="↻">
                                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             </state>
+                                                            <connections>
+                                                                <action selector="retryButtonTapped" destination="BSW-hu-mii" eventType="touchUpInside" id="ef4-Jv-yRh"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -120,6 +123,14 @@ Location</string>
                                         <constraint firstAttribute="trailingMargin" secondItem="ss1-Xt-zfy" secondAttribute="trailing" id="ScM-Ic-OVe"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="descriptionLabel" destination="ucB-3j-oHX" id="h4m-b2-tMO"/>
+                                    <outlet property="feedImageContainer" destination="Vrk-kk-yt5" id="Gg9-w9-zrZ"/>
+                                    <outlet property="feedImageRetryButton" destination="DqZ-yK-8WK" id="BMF-z2-pny"/>
+                                    <outlet property="feedImageView" destination="jDq-FL-KeV" id="IWo-TD-d0v"/>
+                                    <outlet property="locationContainer" destination="joK-cx-fyy" id="zRf-AP-jTj"/>
+                                    <outlet property="locationLabel" destination="ct1-ez-T1E" id="gwQ-lJ-Dp4"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
