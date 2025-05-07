@@ -14,15 +14,16 @@ protocol FeedImageCellControllerDelegate {
 
 public final class FeedImageCellController: FeedImageView {
     private let delegate: FeedImageCellControllerDelegate
-    private lazy var cell = FeedImageCell()
+    private var cell: FeedImageCell?
     
     init(delegate: FeedImageCellControllerDelegate) {
         self.delegate = delegate
     }
 
-    func view() -> UITableViewCell {
+    func view(in tableView: UITableView) -> UITableViewCell {
+        cell = tableView.dequeueReusableCell()
         delegate.didRequestImage()
-        return cell
+        return cell!
     }
 
     func preload() {
@@ -30,16 +31,25 @@ public final class FeedImageCellController: FeedImageView {
     }
 
     func cancelLoad() {
+        releaseCellForReuse()
         delegate.didCancelImageRequest()
     }
 
     func display(_ viewModel: FeedImageViewModel<UIImage>) {
-        cell.descriptionLabel.text = viewModel.description
-        cell.locationLabel.text = viewModel.location
-        cell.locationContainer.isHidden = !viewModel.hasLocation
-        cell.feedImageView.image = viewModel.image
-        cell.feedImageRetryButton.isHidden = !viewModel.shouldRetry
-        cell.feedImageContainer.isShimmering = viewModel.isLoading
-        cell.onRetry = delegate.didRequestImage
+        cell?.descriptionLabel.text = viewModel.description
+        cell?.locationLabel.text = viewModel.location
+        cell?.locationContainer.isHidden = !viewModel.hasLocation
+        cell?.feedImageView.setImageAminated(viewModel.image)
+        cell?.feedImageRetryButton.isHidden = !viewModel.shouldRetry
+        cell?.feedImageContainer.isShimmering = viewModel.isLoading
+        cell?.onRetry = delegate.didRequestImage
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
+    }
+    
+    func releaseCellForReuse() {
+        cell?.onReuse = nil
+        cell = nil
     }
 }

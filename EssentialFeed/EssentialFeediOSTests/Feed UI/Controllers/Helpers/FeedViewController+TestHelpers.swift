@@ -9,9 +9,37 @@ import UIKit
 import EssentialFeediOS
 
 extension FeedViewController {
+    func replaceRefreshControlWithFakeForiOS17Support() {
+        let fake = FakeRefreshControl()
+        
+        refreshControl?.allTargets.forEach { target in
+            refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
+                fake.addTarget(target, action: Selector(action), for: .valueChanged)
+            }
+        }
+        
+        refreshControl = fake
+    }
+    
+    class FakeRefreshControl: UIRefreshControl {
+        private var _isRefreshing = false
+        
+        override var isRefreshing: Bool {
+            _isRefreshing
+        }
+        
+        override func beginRefreshing() {
+            _isRefreshing = true
+        }
+        
+        override func endRefreshing() {
+            _isRefreshing = false
+        }
+    }
+    
     func simulateAppearance() {
         if !isViewLoaded {
-            refreshController?.replaceRefreshControlWithFakeForiOS17Support()
+            replaceRefreshControlWithFakeForiOS17Support()
             loadViewIfNeeded()
         }
         
@@ -46,12 +74,14 @@ extension FeedViewController {
         return feedImageView(at: row) as? FeedImageCell
     }
     
-    func simulateFeedImageViewNotVisible(at row: Int) {
+    @discardableResult
+    func simulateFeedImageViewNotVisible(at row: Int) -> FeedImageCell? {
         let view = simulateFeedImageViewVisible(at: row)
 
         let delegate = tableView.delegate
         let index = IndexPath(row: row, section: feedImagesSection)
         delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
+        return view
     }
     
     func simulateFeedImageViewNearVisible(at row: Int) {
