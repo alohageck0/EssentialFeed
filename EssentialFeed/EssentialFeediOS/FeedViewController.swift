@@ -9,12 +9,25 @@ import Foundation
 import EssentialFeed
 import UIKit
 
-public final class FeedViewController: UITableViewController {
-    private var loader: FeedLoader?
+public protocol FeedImageDataLoaderTask {
+    func cancel()
+}
+public protocol FeedImageDateLoader {
+    typealias Result = Swift.Result<Data, Error>
     
-    public convenience init(loader: FeedLoader) {
+    func loadImageData(from url: URL, _ completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
+}
+
+public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
+    private var loader: FeedLoader?
+    private(set) var imageLoader: FeedImageDateLoader?
+    private var tableModel = [FeedImage]()
+    private(set) var tasks = [IndexPath: FeedImageDataLoaderTask]()
+    
+    public convenience init(loader: FeedLoader, imageLoader: FeedImageDateLoader) {
         self.init()
         self.loader = loader
+        self.imageLoader = imageLoader
     }
     
     public override func viewDidLoad() {
@@ -22,7 +35,7 @@ public final class FeedViewController: UITableViewController {
         
         refreshControl = UIRefreshControl()
         refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
-        
+        tableView.prefetchDataSource = self
         load()
     }
     
@@ -33,8 +46,63 @@ public final class FeedViewController: UITableViewController {
         refresh()
     }
     
+    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        tableModel.count
+    }
+    
+    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cellModel = tableModel[indexPath.row]
+        let cell = FeedImageCell()
+        cell.descriptionLabel.text = cellModel.description
+        cell.locationLabel.text = cellModel.location
+        cell.locationContainer.isHidden = (cellModel.location == nil)
+        cell.feedImageContainer.startShimmering()
+        cell.feedImageView.image = nil
+        cell.feedImageRetryButton.isHidden = true
+        let loadImage = { [weak self, weak cell] in
+            guard let self = self, let cell = cell else { return }
+            
+            tasks[indexPath] = self.imageLoader?.loadImageData(from: cellModel.url) { [weak cell] result in
+                let data = try? result.get()
+                let image = data.map(UIImage.init) ?? nil
+                cell?.feedImageView.image = image
+                cell?.feedImageRetryButton.isHidden = (image != nil)
+                cell?.feedImageContainer.stopShimmering()
+            }
+        }
+        
+        cell.onRetry = loadImage
+        loadImage()
+        
+        return cell
+    }
+    
+    public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cancelTask(forRowAt: indexPath)
+    }
+    
+    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach { indexPath in
+            let cellModel = tableModel[indexPath.row]
+            tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.url, { _ in })
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach(cancelTask(forRowAt:))
+    }
+    
+    private func cancelTask(forRowAt indexPath: IndexPath) {
+        tasks[indexPath]?.cancel()
+        tasks[indexPath] = nil
+    }
+    
     @objc func load() {
-        loader?.load() { [weak self] _ in
+        loader?.load() { [weak self] result in
+            if let feed = try? result.get() {
+                self?.tableModel = feed
+                self?.tableView.reloadData()
+            }
             self?.refreshControl?.endRefreshing()
         }
     }
