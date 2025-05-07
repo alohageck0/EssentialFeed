@@ -34,8 +34,8 @@ class EssentialFeedAPIEnd2EndTests: XCTestCase {
         let url = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
         let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         let loader = RemoteFeedLoader(client: client, url: url)
-        trackForMemeoryLeaks(client, file: file, line: line)
-        trackForMemeoryLeaks(loader, file: file, line: line)
+        trackForMemoryLeaks(client, file: file, line: line)
+        trackForMemoryLeaks(loader, file: file, line: line)
         
         let exp = expectation(description: "Wait")
         var receivedResult: FeedLoader.Result?
