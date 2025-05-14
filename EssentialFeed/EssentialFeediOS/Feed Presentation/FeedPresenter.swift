@@ -16,20 +16,30 @@ public struct FeedViewModel {
 }
 
 protocol FeedLoadingView {
-    func display(viewModel: FeedLoadingViewModel)
+    func display(_ viewModel: FeedLoadingViewModel)
 }
 
 protocol FeedView {
-    func display(viewModel: FeedViewModel)
+    func display(_ viewModel: FeedViewModel)
+}
+
+struct FeedErrorViewModel {
+    let message: String
+}
+
+protocol FeedErrorView {
+    func display(_ viewModel: FeedErrorViewModel)
 }
 
 public final class FeedPresenter {
     let loadingView: FeedLoadingView
     let feedView: FeedView
+    private let errorView: FeedErrorView
     
-    init(loadingView: FeedLoadingView, feedView: FeedView) {
+    init(loadingView: FeedLoadingView, feedView: FeedView, errorView: FeedErrorView) {
         self.loadingView = loadingView
         self.feedView = feedView
+        self.errorView = errorView
     }
     
     static var title: String {
@@ -40,16 +50,24 @@ public final class FeedPresenter {
             comment: "Title for a feed view.")
     }
     
+    private var feedLoadError: String {
+        NSLocalizedString("FEED_VIEW_CONNECTION_ERROR",
+             tableName: "Feed",
+             bundle: Bundle(for: FeedPresenter.self),
+             comment: "Error message displayed when we can't load the image feed from the server")
+    }
+    
     func didStartLoadingFeed() {
-        loadingView.display(viewModel: FeedLoadingViewModel(isLoading: true))
+        loadingView.display(FeedLoadingViewModel(isLoading: true))
     }
     
     func didFinishLoadingFeed(with feed: [FeedImage]) {
-        feedView.display(viewModel: FeedViewModel(feed: feed))
-        loadingView.display(viewModel: FeedLoadingViewModel(isLoading: false))
+        feedView.display(FeedViewModel(feed: feed))
+        loadingView.display(FeedLoadingViewModel(isLoading: false))
     }
     
     func didFinishLoadingFeed(with error: Error) {
-        loadingView.display(viewModel: FeedLoadingViewModel(isLoading: false))
+        errorView.display(FeedErrorViewModel(message: feedLoadError))
+        loadingView.display(FeedLoadingViewModel(isLoading: false))
     }
 }
