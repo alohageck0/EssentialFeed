@@ -47,6 +47,10 @@ extension FeedViewController {
         endAppearanceTransition()
     }
     
+    var errorMessage: String? {
+        errorView?.message
+    }
+    
     func simulateUserInitiatedFeedReload() {
         refreshControl?.simulatePullToRefresh()
     }
