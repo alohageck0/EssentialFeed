@@ -15,9 +15,13 @@ class RemoteFeedImageDataLoader {
         self.client = client
     }
     
-    func loadImageData(from url: URL, _ completion: @escaping (Any) -> Void) {
-        client.get(from: url) { _ in
-            
+    func loadImageData(from url: URL, _ completion: @escaping (FeedImageDataLoader.Result) -> Void) {
+        client.get(from: url) { result in
+            switch result {
+            case .success: break
+            case let .failure(error):
+                completion(.failure(error))
+            }
         }
     }
 }
@@ -47,6 +51,25 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestedURLs, [url, url])
     }
     
+    func test_loadImageData_deliversErrorOnClientError() {
+        let (sut, client) = makeSUT()
+        let url = anyURL()
+        
+        let exp = expectation(description: "wait to complete")
+        sut.loadImageData(from: url) { result in
+            switch result {
+            case .failure(_): break
+            default:
+                XCTFail("Expected to fail with error.")
+            }
+            exp.fulfill()
+        }
+        
+        client.complete(with: anyNSError())
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(url: URL = anyURL(), file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteFeedImageDataLoader, client: HTTPClientSpy) {
@@ -59,9 +82,17 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
     
     private class HTTPClientSpy: HTTPClient {
         func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
-            requestedURLs.append(url)
+            messages.append((url, completion))
         }
         
-        var requestedURLs = [URL]()
+        var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
+        
+        var requestedURLs: [URL] {
+            messages.map { $0.url}
+        }
+        
+        func complete(with error: Error, at index: Int = 0) {
+            messages[index].completion(.failure(error))
+        }
     }
 }
