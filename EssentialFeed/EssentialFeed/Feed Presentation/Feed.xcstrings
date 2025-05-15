@@ -33,6 +33,7 @@
     },
     "FEED_VIEW_TITLE" : {
       "comment" : "Title for a feed view.",
+      "extractionState" : "manual",
       "localizations" : {
         "el" : {
           "stringUnit" : {
