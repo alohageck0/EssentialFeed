@@ -16,16 +16,22 @@ final class FeedPresenter {
 class FeedPresenterTests: XCTestCase {
 
     func test_init_doesNotSendMessages() async throws {
-        let view = ViewSpy()
-        
-        _ = FeedPresenter(view: view)
+        let (_, view) = makeSut()
         
         XCTAssertTrue(view.messages.isEmpty, "Expected no messages initially")
     }
 
     // MARK: Helpers
     
-    struct ViewSpy {
+    private func makeSut(file: StaticString = #file, line: UInt = #line) -> (sut: FeedPresenter, view: ViewSpy) {
+        let viewSpy = ViewSpy()
+        let sut = FeedPresenter(view: viewSpy)
+        trackForMemoryLeaks(viewSpy, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        return (sut, viewSpy)
+    }
+    
+    class ViewSpy {
         var messages: [Any] = []
     }
 }
