@@ -30,14 +30,15 @@ public final class FeedImagePresenter<View: FeedImageView, Image> where View.Ima
     }
     
     func didFinishLoadingImageData(with data: Data, for model: FeedImage) {
+        let image = imageTransformer(data)
         view.display(
             FeedImageViewModel(
-                image: imageTransformer(data),
+                image: image,
                 description: model.description,
                 location: model.location,
                 url: model.url,
                 isLoading: false,
-                shouldRetry: true)
+                shouldRetry: image == nil)
         )
     }
     
@@ -121,7 +122,7 @@ class FeedImagePresenterTests: XCTestCase {
         XCTAssertEqual(message?.description, image.description)
         XCTAssertEqual(message?.location, image.location)
         XCTAssertEqual(message?.isLoading, false)
-        XCTAssertEqual(message?.shouldRetry, true)
+        XCTAssertEqual(message?.shouldRetry, false)
         XCTAssertEqual(message?.image, transformedData)
     }
     
