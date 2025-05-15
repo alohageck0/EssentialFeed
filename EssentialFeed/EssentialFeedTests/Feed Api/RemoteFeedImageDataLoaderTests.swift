@@ -54,23 +54,34 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
     func test_loadImageData_deliversErrorOnClientError() {
         let (sut, client) = makeSUT()
         let url = anyURL()
+        let error = anyNSError()
         
+        expect(sut, toCompleteWith: .failure(error)) {
+            client.complete(with: anyNSError())
+        }
+    }
+    
+    // MARK: Helpers
+    
+    private func expect(_ sut: RemoteFeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+        let url = anyURL()
         let exp = expectation(description: "wait to complete")
-        sut.loadImageData(from: url) { result in
-            switch result {
-            case .failure(_): break
+        _ = sut.loadImageData(from: url) { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case let (.success(receivedData), .success(expectedData)):
+                XCTAssertEqual(receivedData, expectedData, file: file, line: line)
+            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
             default:
-                XCTFail("Expected to fail with error.")
+                XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: file, line: line)
             }
             exp.fulfill()
         }
         
-        client.complete(with: anyNSError())
+        action()
         
         wait(for: [exp], timeout: 1.0)
     }
-    
-    // MARK: Helpers
     
     private func makeSUT(url: URL = anyURL(), file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteFeedImageDataLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
