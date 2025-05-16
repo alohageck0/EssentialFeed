@@ -19,21 +19,31 @@ class RemoteFeedImageDataLoader {
         case invalidData
     }
     
-    func loadImageData(from url: URL, _ completion: @escaping (FeedImageDataLoader.Result) -> Void) {
-        client.get(from: url) { [weak self] result in
-            guard self != nil else { return }
-            
-            switch result {
-            case let .success((data, response)):
-                if !data.isEmpty && response.statusCode == 200 {
-                    completion(.success(data))
-                } else {
-                    completion(.failure(Error.invalidData))
-                }
-            case let .failure(error):
-                completion(.failure(error))
-            }
+    private struct HTTPTaskWrapper: FeedImageDataLoaderTask {
+        let wrapped: HTTPClientTask
+        
+        func cancel() {
+            wrapped.cancel()
         }
+    }
+    
+    func loadImageData(from url: URL, _ completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+        HTTPTaskWrapper(wrapped:
+            client.get(from: url) { [weak self] result in
+                guard self != nil else { return }
+                
+                switch result {
+                case let .success((data, response)):
+                    if !data.isEmpty && response.statusCode == 200 {
+                        completion(.success(data))
+                    } else {
+                        completion(.failure(Error.invalidData))
+                    }
+                case let .failure(error):
+                    completion(.failure(error))
+                }
+            }
+        )
     }
 }
 
@@ -161,8 +171,13 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
     }
     
     private class HTTPClientSpy: HTTPClient {
-        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
+        private struct Task: HTTPClientTask {
+            func cancel() {}
+        }
+        
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
             messages.append((url, completion))
+            return Task()
         }
         
         var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
