@@ -27,6 +27,7 @@ class RemoteFeedImageDataLoader {
         }
     }
     
+    @discardableResult
     func loadImageData(from url: URL, _ completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         HTTPTaskWrapper(wrapped:
             client.get(from: url) { [weak self] result in
@@ -126,6 +127,20 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         XCTAssertTrue(receivedResults.isEmpty, "Expected no results, but got: \(receivedResults)")
     }
     
+    func test_loadImageData_cancellingCancellsHTTPRequest() {
+        let (sut, client) = makeSUT()
+        let url = anyURL()
+        
+        let task = sut.loadImageData(from: url) { _ in }
+        
+        XCTAssertTrue(client.cancelledURLs.isEmpty)
+        task.cancel()
+        client.complete(withStatusCode: 200, data: anyData())
+
+        XCTAssertEqual(client.cancelledURLs, [url], "Expected to cancel request to \(url), but got: \(client.cancelledURLs)")
+        
+    }
+    
     // MARK: Helpers
     
     private func expect(_ sut: RemoteFeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
@@ -172,15 +187,19 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
     
     private class HTTPClientSpy: HTTPClient {
         private struct Task: HTTPClientTask {
-            func cancel() {}
+            let callback: () -> Void
+            func cancel() { callback() }
         }
         
         func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
             messages.append((url, completion))
-            return Task()
+            return Task { [weak self] in
+                self?.cancelledURLs.append(url)
+            }
         }
         
         var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
+        private(set) var cancelledURLs = [URL]()
         
         var requestedURLs: [URL] {
             messages.map { $0.url}
