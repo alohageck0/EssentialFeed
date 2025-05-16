@@ -78,6 +78,15 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         }
     }
     
+    func test_loadImageData_deliversInvalidDataErrorOnNon200ResponseWithEmptyData() {
+        let (sut, client) = makeSUT()
+        
+            
+        expect(sut, toCompleteWith: failure(.invalidData)) {
+            client.complete(withStatusCode: 200, data: emptyData())
+        }
+    }
+    
     // MARK: Helpers
     
     private func expect(_ sut: RemoteFeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
@@ -104,6 +113,10 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
     
     private func anyData() -> Data {
         return Data("any data".utf8)
+    }
+    
+    private func emptyData() -> Data {
+        return Data()
     }
     
     private func failure(_ error: RemoteFeedImageDataLoader.Error) -> FeedImageDataLoader.Result {
