@@ -1,5 +1,5 @@
 //
-//  RemoteFeedImageDataLoaderTests.swift
+//  LoadFeedImageDataFromRemoteUseCaseTests.swift
 //  EssentialFeedTests
 //
 //  Created by Evgenii Iavorovich on 5/15/25.
@@ -10,7 +10,7 @@ import EssentialFeed
 
 
 
-class RemoteFeedImageDataLoaderTests: XCTestCase {
+class LoadFeedImageDataFromRemoteUseCaseTests: XCTestCase {
     func test_init_doesNotPerformAnyURLRequests() {
         let (_, client) = makeSUT()
         XCTAssertTrue(client.requestedURLs.isEmpty)
