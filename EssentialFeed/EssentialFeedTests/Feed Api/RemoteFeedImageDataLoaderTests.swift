@@ -196,14 +196,6 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    private func anyData() -> Data {
-        return Data("any data".utf8)
-    }
-    
-    private func emptyData() -> Data {
-        return Data()
-    }
-    
     private func failure(_ error: RemoteFeedImageDataLoader.Error) -> FeedImageDataLoader.Result {
         .failure(error)
     }
