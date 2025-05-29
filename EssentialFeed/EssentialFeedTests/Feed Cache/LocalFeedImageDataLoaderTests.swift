@@ -80,6 +80,16 @@ class LocalFeedImageDataLoaderTests: XCTestCase {
         XCTAssertTrue(receivedResult.isEmpty, "Expected no received results after cancelling task")
     }
     
+    func test_saveImageData_storesData() {
+        let (sut, store) = makeSUT()
+        let data = anyData()
+        let url = anyURL()
+        
+        sut.save(data, for: url) { _ in }
+        
+        XCTAssertEqual(store.receivedMessages, [.insert(data: data, forURL: url)])
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: StoreSpy) {
@@ -124,6 +134,7 @@ class LocalFeedImageDataLoaderTests: XCTestCase {
     private class StoreSpy: FeedImageDataStore {
         enum Message: Equatable {
             case retreive(forURL: URL)
+            case insert(data: Data, forURL: URL)
         }
         
         var receivedMessages = [Message]()
@@ -131,6 +142,11 @@ class LocalFeedImageDataLoaderTests: XCTestCase {
         
         func retrieve(dataForURL url: URL, completion: @escaping (FeedImageDataStore.Result) -> Void) {
             receivedMessages.append(.retreive(forURL: url))
+            completions.append(completion)
+        }
+        
+        func insert(data: Data, forURL url: URL, completion: @escaping (InsertionResult) -> Void) {
+            receivedMessages.append(.insert(data: data, forURL: url))
             completions.append(completion)
         }
         
