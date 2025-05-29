@@ -23,6 +23,7 @@ final class LocalFeedImageDataLoader: FeedImageDataLoader {
     
     enum Error: Swift.Error {
         case failed
+        case notFound
     }
     
     let store: FeedImageDataStore
@@ -32,8 +33,10 @@ final class LocalFeedImageDataLoader: FeedImageDataLoader {
     }
     
     public func loadImageData(from url: URL, _ completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        store.retrieve(dataForURL: url) { _ in
-            completion(.failure(Error.failed))
+        store.retrieve(dataForURL: url) { result in
+            completion(result
+                .mapError { _ in Error.failed }
+                .flatMap { _ in .failure(Error.notFound) })
         }
         return Task()
     }
@@ -59,8 +62,16 @@ class LocalFeedImageDataLoaderTests: XCTestCase {
     func test_loadImageDataFromUrl_failsOnStoreError() {
         let (sut, store) = makeSUT()
         
-        expect(sut, toCompleteWith: .failure(LocalFeedImageDataLoader.Error.failed)) {
+        expect(sut, toCompleteWith: failed()) {
             store.complete(with: anyNSError())
+        }
+    }
+    
+    func test_loadImageDataFromUrl_deliversNotFoundErrorOnNotFound() {
+        let (sut, store) = makeSUT()
+        
+        expect(sut, toCompleteWith: notFound()) {
+            store.complete(with: .none)
         }
     }
     
@@ -72,6 +83,14 @@ class LocalFeedImageDataLoaderTests: XCTestCase {
         trackForMemoryLeaks(sut, file: file, line: line)
         trackForMemoryLeaks(store, file: file, line: line)
         return (sut, store)
+    }
+    
+    private func failed() -> FeedImageDataLoader.Result {
+        .failure(LocalFeedImageDataLoader.Error.failed)
+    }
+    
+    private func notFound() -> FeedImageDataLoader.Result {
+        .failure(LocalFeedImageDataLoader.Error.notFound)
     }
     
     private func expect(_ sut: LocalFeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
@@ -112,6 +131,10 @@ class LocalFeedImageDataLoaderTests: XCTestCase {
         
         func complete(with error: Error, at index: Int = 0) {
             completions[index](.failure(error))
+        }
+        
+        func complete(with data: Data? = nil, at index: Int = 0) {
+            completions[index](.success(data))
         }
     }
 }
