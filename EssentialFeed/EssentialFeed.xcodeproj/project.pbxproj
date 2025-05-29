@@ -27,6 +27,8 @@
 		7E0E19462DD8045B009B9F38 /* HTTPURLResponse+StatusCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E0E19452DD8045B009B9F38 /* HTTPURLResponse+StatusCode.swift */; };
 		7E0E19482DD804E7009B9F38 /* URLProtocolStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E0E19472DD804E7009B9F38 /* URLProtocolStub.swift */; };
 		7E148B8C2DE681C4009B7ED6 /* LocalFeedImageDataLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E148B8B2DE681C4009B7ED6 /* LocalFeedImageDataLoaderTests.swift */; };
+		7E148B8E2DE91CE8009B7ED6 /* LocalFeedImageDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E148B8D2DE91CE8009B7ED6 /* LocalFeedImageDataLoader.swift */; };
+		7E148B902DE91D3B009B7ED6 /* FeedImageDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E148B8F2DE91D3B009B7ED6 /* FeedImageDataStore.swift */; };
 		7E2A1FDC2D62BA3900AB7E92 /* FeedStoreSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E2A1FDB2D62BA3900AB7E92 /* FeedStoreSpecs.swift */; };
 		7E2A1FE02D62BD1900AB7E92 /* XCTestCase+FeedStoreSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E2A1FDF2D62BD1900AB7E92 /* XCTestCase+FeedStoreSpecs.swift */; };
 		7E54581E2D7E08570082FF67 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; platformFilter = ios; };
@@ -146,6 +148,8 @@
 		7E0E19452DD8045B009B9F38 /* HTTPURLResponse+StatusCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HTTPURLResponse+StatusCode.swift"; sourceTree = "<group>"; };
 		7E0E19472DD804E7009B9F38 /* URLProtocolStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLProtocolStub.swift; sourceTree = "<group>"; };
 		7E148B8B2DE681C4009B7ED6 /* LocalFeedImageDataLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeedImageDataLoaderTests.swift; sourceTree = "<group>"; };
+		7E148B8D2DE91CE8009B7ED6 /* LocalFeedImageDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeedImageDataLoader.swift; sourceTree = "<group>"; };
+		7E148B8F2DE91D3B009B7ED6 /* FeedImageDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageDataStore.swift; sourceTree = "<group>"; };
 		7E2A1FDB2D62BA3900AB7E92 /* FeedStoreSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedStoreSpecs.swift; sourceTree = "<group>"; };
 		7E2A1FDF2D62BD1900AB7E92 /* XCTestCase+FeedStoreSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+FeedStoreSpecs.swift"; sourceTree = "<group>"; };
 		7E5457FA2D7CB0E60082FF67 /* UX-requirements.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "UX-requirements.rtf"; sourceTree = "<group>"; };
@@ -460,6 +464,8 @@
 				7EF54F3D2D46B02A0044CA16 /* FeedStore.swift */,
 				7EF54F412D486AC20044CA16 /* LocalFeedImage.swift */,
 				7EF54F662D51A3BB0044CA16 /* FeedCachePolicy.swift */,
+				7E148B8D2DE91CE8009B7ED6 /* LocalFeedImageDataLoader.swift */,
+				7E148B8F2DE91D3B009B7ED6 /* FeedImageDataStore.swift */,
 			);
 			path = "Feed Cache";
 			sourceTree = "<group>";
@@ -734,6 +740,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E148B8E2DE91CE8009B7ED6 /* LocalFeedImageDataLoader.swift in Sources */,
 				7E664E872D66AEC900901494 /* FeedStore.xcdatamodeld in Sources */,
 				080EDF0E21B6DCB600813479 /* FeedLoader.swift in Sources */,
 				7ECD39742D24741C00AD14BE /* FeedItemMapper.swift in Sources */,
@@ -749,6 +756,7 @@
 				7E0E18442DD579AB009B9F38 /* FeedViewModel.swift in Sources */,
 				7EF54F422D486AC20044CA16 /* LocalFeedImage.swift in Sources */,
 				7EF54F3B2D46AF290044CA16 /* LocalFeedLoader.swift in Sources */,
+				7E148B902DE91D3B009B7ED6 /* FeedImageDataStore.swift in Sources */,
 				7EF54F442D486B1E0044CA16 /* RemoteFeedItem.swift in Sources */,
 				7E0E183D2DD57830009B9F38 /* FeedPresenter.swift in Sources */,
 				7E0E19462DD8045B009B9F38 /* HTTPURLResponse+StatusCode.swift in Sources */,
