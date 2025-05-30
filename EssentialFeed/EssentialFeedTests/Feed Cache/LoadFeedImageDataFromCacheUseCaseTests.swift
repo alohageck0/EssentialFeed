@@ -80,16 +80,6 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
         XCTAssertTrue(receivedResult.isEmpty, "Expected no received results after cancelling task")
     }
     
-    func test_saveImageData_storesData() {
-        let (sut, store) = makeSUT()
-        let data = anyData()
-        let url = anyURL()
-        
-        sut.save(data, for: url) { _ in }
-        
-        XCTAssertEqual(store.receivedMessages, [.insert(data: data, forURL: url)])
-    }
-    
     // MARK: Helpers
     
     private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
