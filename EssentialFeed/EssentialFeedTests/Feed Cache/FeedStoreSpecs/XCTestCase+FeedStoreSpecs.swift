@@ -100,7 +100,7 @@ extension FeedStoreSpecs where Self: XCTestCase {
         var completedOperationsInOrder = [XCTestExpectation]()
 
         let op1 = expectation(description: "Operation 1")
-        sut.insert(uniqueImageFeed().local, Date()) { _ in
+        sut.insert(uniqueImageFeed().local, timestamp: Date()) { _ in
             completedOperationsInOrder.append(op1)
             op1.fulfill()
         }
@@ -112,7 +112,7 @@ extension FeedStoreSpecs where Self: XCTestCase {
         }
 
         let op3 = expectation(description: "Operation 3")
-        sut.insert(uniqueImageFeed().local, Date()) { _ in
+        sut.insert(uniqueImageFeed().local, timestamp: Date()) { _ in
             completedOperationsInOrder.append(op3)
             op3.fulfill()
         }
@@ -128,7 +128,7 @@ extension FeedStoreSpecs where Self: XCTestCase {
     func insert(_ expected: (feed: [LocalFeedImage], currentDate: Date), to sut: FeedStore, file: StaticString = #filePath, line: UInt = #line) -> Error? {
         let exp = expectation(description: "wait for retreival to complete")
         var insertionError: Error?
-        sut.insert(expected.feed, expected.currentDate) { result in
+        sut.insert(expected.feed, timestamp: expected.currentDate) { result in
             if case let Result.failure(error) = result { insertionError = error
             }
             exp.fulfill()

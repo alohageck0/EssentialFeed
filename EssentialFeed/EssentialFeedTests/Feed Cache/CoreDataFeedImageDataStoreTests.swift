@@ -10,7 +10,7 @@ import XCTest
 import EssentialFeed
 
 extension CoreDataFeedStore: FeedImageDataStore {
-    public func insert(data: Data, forURL url: URL, completion: @escaping (InsertionResult) -> Void) {
+    public func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
         
     }
     
@@ -27,6 +27,16 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
         let sut = makeSUT()
         
         expect(sut, toCompleteRetrievalWith: notFound(), for: anyURL())
+    }
+    
+    func test_retrieveImageData_deliversNotFoundWhenStoredDataURLDoesNotMatch() {
+        let sut = makeSUT()
+        let url = anyURL()
+        let nonMatchingUrl = URL(string: "http://another-url.com/")!
+        
+        insert(anyData(), for: url, into: sut)
+        
+        expect(sut, toCompleteRetrievalWith: notFound(), for: nonMatchingUrl)
     }
     
     // MARK: Helpers
@@ -57,4 +67,28 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
     }
+    
+    private func localImage(url: URL) -> LocalFeedImage {
+        .init(id: UUID(), description: "", location: "", url: url)
+    }
+    
+    private func insert(_ data: Data, for url: URL, into sut: CoreDataFeedStore, file: StaticString = #file, line: UInt = #line) {
+            let exp = expectation(description: "Wait for cache insertion")
+            let image = localImage(url: url)
+            sut.insert([image], timestamp: Date()) { result in
+                switch result {
+                case let .failure(error):
+                    XCTFail("Failed to save \(image) with error \(error)", file: file, line: line)
+
+                case .success:
+                    sut.insert(data, for: url) { result in
+                        if case let Result.failure(error) = result {
+                            XCTFail("Failed to insert \(data) with error \(error)", file: file, line: line)
+                        }
+                    }
+                }
+                exp.fulfill()
+            }
+            wait(for: [exp], timeout: 1.0)
+        }
 }

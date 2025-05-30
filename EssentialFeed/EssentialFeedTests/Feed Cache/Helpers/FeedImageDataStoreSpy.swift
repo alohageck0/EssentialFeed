@@ -23,7 +23,7 @@ public class FeedImageDataStoreSpy: FeedImageDataStore {
         retreivalCompletions.append(completion)
     }
     
-    public func insert(data: Data, forURL url: URL, completion: @escaping (InsertionResult) -> Void) {
+    public func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
         receivedMessages.append(.insert(data: data, forURL: url))
         insertionCompletions.append(completion)
     }
