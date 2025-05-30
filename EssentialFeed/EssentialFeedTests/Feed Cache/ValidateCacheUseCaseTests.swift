@@ -83,6 +83,25 @@ final class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retreive])
     }
     
+    func test_validateCache_failsOnDeletionErrorOfFailedRetrieval() {
+        let (store, sut) = makeSUT()
+        let deletionError = anyNSError()
+        
+        expect(sut, toCompleteWith: .failure(deletionError)) {
+            store.completeRetreival(with: anyNSError())
+            store.completeDeletion(with: deletionError)
+        }
+    }
+    
+    func test_validateCache_succeedsOnSuccessfulDeletionOfFailedRetrieval() {
+        let (store, sut) = makeSUT()
+        
+        expect(sut, toCompleteWith: .success(())) {
+            store.completeRetreival(with: anyNSError())
+            store.completeDeletionSuccessfully()
+        }
+    }
+    
     //MARK: Helpers
     
     private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (store: FeedStoreSpy, sut: LocalFeedLoader) {
@@ -91,5 +110,28 @@ final class ValidateCacheUseCaseTests: XCTestCase {
         trackForMemoryLeaks(feedStore, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (feedStore, sut)
+    }
+    
+    private func expect(_ sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.ValidationResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+        
+        let saveExp = expectation(description: "Wait for save completion")
+        sut.validateCache { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case (.success, .success):
+                break
+
+            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+
+            default:
+                XCTFail("Expected result \(expectedResult), got \(receivedResult) instead", file: file, line: line)
+            }
+            
+            saveExp.fulfill()
+        }
+        
+        action()
+        
+        wait(for: [saveExp], timeout: 1.0)
     }
 }

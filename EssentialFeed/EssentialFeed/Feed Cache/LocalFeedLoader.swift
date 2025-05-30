@@ -70,16 +70,14 @@ extension LocalFeedLoader {
             
             switch result {
             case .failure:
-                self.store.deleteCachedFeed { _ in completion(.success(())) }
+                self.store.deleteCachedFeed(completion: completion)
             case let .success(.some(cache)) where !FeedCachePolicy.validate(cache.timestamp, against: self.currentDate()):
                 self.store.deleteCachedFeed { _ in completion(.success(())) }
             case .success:
                 completion(.success(()))
             }
         }
-
     }
-    
 }
 
 extension Array where Element == FeedImage {
