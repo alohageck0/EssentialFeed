@@ -34,7 +34,7 @@ extension LocalFeedLoader {
     }
     
     private func cache(_ feed: [FeedImage], with completion: @escaping (SaveResult) -> Void) {
-        self.store.insert(feed.toLocal(), self.currentDate()) { [weak self] result in
+        self.store.insert(feed.toLocal(), timestamp: self.currentDate()) { [weak self] result in
             guard self != nil else { return }
             
             completion(result)
@@ -62,21 +62,22 @@ extension LocalFeedLoader: FeedLoader {
 }
 
 extension LocalFeedLoader {
-    public func validateCache(completion: @escaping (LoadResult) -> Void) {
+    public typealias ValidationResult = Result<Void, Error>
+    
+    public func validateCache(completion: @escaping (ValidationResult) -> Void) {
         store.retreive { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .failure:
-                self.store.deleteCachedFeed { _ in }
+                self.store.deleteCachedFeed(completion: completion)
             case let .success(.some(cache)) where !FeedCachePolicy.validate(cache.timestamp, against: self.currentDate()):
-                self.store.deleteCachedFeed { _ in }
-            case .success: break
+                self.store.deleteCachedFeed(completion: completion)
+            case .success:
+                completion(.success(()))
             }
         }
-
     }
-    
 }
 
 extension Array where Element == FeedImage {

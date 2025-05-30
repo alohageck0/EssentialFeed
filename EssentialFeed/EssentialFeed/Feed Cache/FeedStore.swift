@@ -26,7 +26,7 @@ public protocol FeedStore {
     
     // The completion handler can be invoked i nany thread.
     // Clients are responsible to dispatch to appropriate threads, if needed.
-    func insert(_ feed: [LocalFeedImage], _ currentDate: Date, completion: @escaping InsertionCompletion)
+    func insert(_ feed: [LocalFeedImage], timestamp currentDate: Date, completion: @escaping InsertionCompletion)
     
     // The completion handler can be invoked i nany thread.
     // Clients are responsible to dispatch to appropriate threads, if needed.
