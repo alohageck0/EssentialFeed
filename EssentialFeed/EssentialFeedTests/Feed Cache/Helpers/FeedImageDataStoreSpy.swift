@@ -15,10 +15,10 @@ public class FeedImageDataStoreSpy: FeedImageDataStore {
     }
     
     private(set) var receivedMessages = [Message]()
-    private var retreivalCompletions = [(FeedImageDataStore.RetreivalResult) -> Void]()
+    private var retreivalCompletions = [(FeedImageDataStore.RetrievalResult) -> Void]()
     private var insertionCompletions = [(FeedImageDataStore.InsertionResult) -> Void]()
     
-    public func retrieve(dataForURL url: URL, completion: @escaping (FeedImageDataStore.RetreivalResult) -> Void) {
+    public func retrieve(dataForURL url: URL, completion: @escaping (FeedImageDataStore.RetrievalResult) -> Void) {
         receivedMessages.append(.retreive(forURL: url))
         retreivalCompletions.append(completion)
     }
