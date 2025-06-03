@@ -32,7 +32,7 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageDataLoader {
             case .success:
                 break
             case .failure:
-                _ = self?.fallbackLoader.loadImageData(from: url, completion)
+                task.wrapped = self?.fallbackLoader.loadImageData(from: url) { _ in }
             }
         }
         return task
@@ -81,6 +81,18 @@ class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
         XCTAssertTrue(fallbackLoader.cancelledURLs.isEmpty, "Expected no cancelled URLs in the fallback loader")
     }
     
+    func test_cancelLoadImageData_cancelsFallbackLoaderTaskAfterPrimaryLoaderFailure() {
+        let (sut, primaryLoader, fallbackLoader) = makeSUT()
+        let url = anyURL()
+        
+        let task = sut.loadImageData(from: url) { _ in }
+        primaryLoader.complete(with: anyNSError())
+        task.cancel()
+        
+        XCTAssertTrue(primaryLoader.cancelledURLs.isEmpty, "Expected no cancelled URLs in the primary loader")
+        XCTAssertEqual(fallbackLoader.cancelledURLs, [url], "Expected to cancel URL loading from fallback loader")
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedImageDataLoaderWithFallbackComposite, primaryLoader: LoaderSpy, fallbackLoader: LoaderSpy) {
@@ -118,7 +130,7 @@ class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
         
         private var messages = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
         
-        var cancelledURLs = [URL]()
+        private(set) var cancelledURLs = [URL]()
         
         var loadedURLs: [URL] {
             messages.map { $0.url }
@@ -129,8 +141,8 @@ class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
         func loadImageData(from url: URL, _ completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
             messages.append((url, completion))
             completions.append(completion)
-            return Task {
-                self.cancelledURLs.append(url)
+            return Task { [weak self] in
+                self?.cancelledURLs.append(url)
             }
         }
         
