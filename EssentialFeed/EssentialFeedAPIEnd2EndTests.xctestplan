@@ -21,6 +21,13 @@
       }
     },
     {
+      "target" : {
+        "containerPath" : "container:..\/EssentialApp\/EssentialApp.xcodeproj",
+        "identifier" : "7E148BBA2DEE1269009B7ED6",
+        "name" : "EssentialAppTests"
+      }
+    },
+    {
       "parallelizable" : false,
       "target" : {
         "containerPath" : "container:EssentialFeed.xcodeproj",
