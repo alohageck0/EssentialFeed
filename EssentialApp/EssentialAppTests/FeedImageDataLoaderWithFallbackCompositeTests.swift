@@ -32,7 +32,7 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageDataLoader {
             case .success:
                 completion(result)
             case .failure:
-                task.wrapped = self?.fallbackLoader.loadImageData(from: url) { _ in }
+                task.wrapped = self?.fallbackLoader.loadImageData(from: url, completion)
             }
         }
         return task
@@ -99,6 +99,16 @@ class FeedImageDataLoaderWithFallbackCompositeTests: XCTestCase {
         
         expect(sut, toCompleteWith: .success(expectedData)) {
             primaryLoader.complete(with: expectedData)
+        }
+    }
+    
+    func test_loadImageData_deliversFallbackDataOnFallbackLoaderSuccess() {
+        let (sut, primaryLoader, fallbackLoader) = makeSUT()
+        let expectedData = anyData()
+        
+        expect(sut, toCompleteWith: .success(expectedData)) {
+            primaryLoader.complete(with: anyNSError())
+            fallbackLoader.complete(with: expectedData)
         }
     }
     
