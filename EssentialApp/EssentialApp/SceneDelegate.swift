@@ -22,21 +22,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let _ = (scene as? UIWindowScene) else { return }
         
         let remoteURL = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-        let session = URLSession(configuration: .ephemeral)
-        let remoteClient = URLSessionHTTPClient(session: session)
+        let remoteClient = makeHttpClient()
         let remoteFeedLoader = RemoteFeedLoader(client: remoteClient, url: remoteURL)
         let remoteImageLoader = RemoteFeedImageDataLoader(client: remoteClient)
         
-//        let localStoreURL = NSPersistentContainer
-//            .defaultDirectoryURL()
-//            .appending(path: "feed-store.sqlite")
-//        let localStore = try! CoreDataFeedStore(storeURL: localStoreURL)
-//        let localFeedLoader = LocalFeedLoader(store: localStore, currentDate: Date.init)
-//        let localImageLoader = LocalFeedImageDataLoader(localStore)
+        let localStoreURL = NSPersistentContainer
+            .defaultDirectoryURL()
+            .appending(path: "feed-store.sqlite")
+        let localStore = try! CoreDataFeedStore(storeURL: localStoreURL)
+        let localFeedLoader = LocalFeedLoader(store: localStore, currentDate: Date.init)
+        let localImageLoader = LocalFeedImageDataLoader(localStore)
         
         let feedViewController = FeedUIComposer.feedComposedWith(
-            loader: remoteFeedLoader,
-            imageLoader: remoteImageLoader)
+            loader: FeedLoaderWithFallbackComposite(
+                primary: FeedLoaderCacheDecorator(
+                    decoratee: remoteFeedLoader,
+                    cache: localFeedLoader),
+                fallback: localFeedLoader),
+            imageLoader: FeedImageDataLoaderWithFallbackComposite(
+                primaryLoader: localImageLoader,
+                fallbackLoader: FeedImageDataLoaderCacheDecorator(
+                    decoratee: remoteImageLoader,
+                    cache: localImageLoader)))
         
         window?.rootViewController = feedViewController
     }
@@ -69,6 +76,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
 
-
+    private func makeHttpClient() -> HTTPClient {
+        if UserDefaults.standard.string(forKey: "connectivity") == "offline" {
+            return AlwaysFailingHTTPClient()
+        }
+        return URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+    }
 }
 
+private class AlwaysFailingHTTPClient: HTTPClient {
+    private struct Task: HTTPClientTask {
+        func cancel() {}
+    }
+    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> any HTTPClientTask {
+        completion(.failure(NSError(domain: "offline", code: 0)))
+        return Task()
+    }
+    
+}
