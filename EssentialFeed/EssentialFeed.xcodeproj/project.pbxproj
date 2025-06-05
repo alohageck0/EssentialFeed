@@ -468,8 +468,8 @@
 				7ED2DA1B2D6806F7000ACB8A /* ManagedFeedImage.swift */,
 				7E664E852D66AEC900901494 /* FeedStore.xcdatamodeld */,
 				7ED2DA202D6807A3000ACB8A /* CoreDataFeedStore.swift */,
-				7ED2DA3B2D6A41E9000ACB8A /* CoreDataHelpers.swift */,
 				7E148B982DEA3AE3009B7ED6 /* CoreDataFeedStore+FeedImageDataLoader.swift */,
+				7ED2DA3B2D6A41E9000ACB8A /* CoreDataHelpers.swift */,
 				7E148B9A2DEA44B8009B7ED6 /* CoreDataFeedStore+FeedStore.swift */,
 			);
 			path = CoreData;
