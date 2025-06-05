@@ -23,19 +23,15 @@ final class EssentialAppUIAcceptanceTests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
+    func test_onLaunch_displaysRemoteFeedWhenCustomerHasConnectivity() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
+        let feedCells = app.cells.matching(identifier: "feed-image-cell")
+        XCTAssertEqual(feedCells.count, 22)
 
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
+        let firstImage = app.images.matching(identifier: "feed-image-view").firstMatch
+        XCTAssertTrue(firstImage.exists)
     }
 }

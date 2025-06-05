@@ -95,6 +95,9 @@ Location</string>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jDq-FL-KeV">
                                                             <rect key="frame" x="0.0" y="0.0" width="353" height="353"/>
+                                                            <accessibility key="accessibilityConfiguration" identifier="feed-image-view">
+                                                                <bool key="isElement" value="YES"/>
+                                                            </accessibility>
                                                         </imageView>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DqZ-yK-8WK">
                                                             <rect key="frame" x="0.0" y="0.0" width="353" height="353"/>
@@ -109,6 +112,9 @@ Location</string>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <accessibility key="accessibilityConfiguration">
+                                                        <bool key="isElement" value="YES"/>
+                                                    </accessibility>
                                                     <constraints>
                                                         <constraint firstItem="DqZ-yK-8WK" firstAttribute="leading" secondItem="Vrk-kk-yt5" secondAttribute="leading" id="1ZJ-lc-2L0"/>
                                                         <constraint firstItem="DqZ-yK-8WK" firstAttribute="top" secondItem="Vrk-kk-yt5" secondAttribute="top" id="Bbd-hl-Erm"/>
@@ -146,6 +152,9 @@ Location</string>
                                         <constraint firstAttribute="trailingMargin" secondItem="ss1-Xt-zfy" secondAttribute="trailing" id="ScM-Ic-OVe"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <accessibility key="accessibilityConfiguration" identifier="feed-image-cell">
+                                    <bool key="isElement" value="YES"/>
+                                </accessibility>
                                 <connections>
                                     <outlet property="descriptionLabel" destination="ucB-3j-oHX" id="h4m-b2-tMO"/>
                                     <outlet property="feedImageContainer" destination="Vrk-kk-yt5" id="Gg9-w9-zrZ"/>
